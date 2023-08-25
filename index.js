@@ -5,7 +5,17 @@ const userInfo = [];
 
 fs.createReadStream('database.csv')
         .pipe(csv())
-        .on('data', (data) => userInfo.push(data))
+        .on('data', (row) => {
+            const cleanedRow = {};
+            for (const key in row) {
+                if (Object.hasOwnProperty.call(row, key)) {
+                    const cleanedKey = key.trim();
+                    const cleanedValue = row[key].trim();
+                    cleanedRow[cleanedKey] = cleanedValue;
+                }
+            }
+            userInfo.push(cleanedRow);
+        })
         .on('end', () => {
             console.log(userInfo);
             lastUser = userInfo[userInfo.length - 1];
