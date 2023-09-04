@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const csv = require('csv-parser');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 
 const userInfo = [];
 
@@ -35,3 +35,22 @@ fs.createReadStream('database.csv')
                 }
             });
         });
+
+const fileData = fs.readFileSync('hash_database.csv', 'utf-8');
+
+const lines = fileData.split('\n');
+let newId = 1;
+const filteredLines = [lines[0]];
+
+for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    const columns = line.split(',');
+
+    if (!columns.some(column => column.trim() === '-')) {
+        columns[0] = newId++;
+        filteredLines.push(columns.join(','));
+    }
+}
+
+const filteredData = filteredLines.join('\n');
+fs.writeFileSync('filtered_database.csv', filteredData, 'utf-8');
